@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener</title>
+</head>
+<body>
+    <script>
+        function shortenUrl() {
+            const urlToShorten = new URLSearchParams(window.location.search).get('L');
+            const apiKey = '460de983-0720-4fe3-b565-6a8b228940c1'; // Replace with your Foxlyme API key
+            const domainId = '3c9facf8-22db-45b7-a839-a226d0a9b821'; // Replace with your Foxlyme domain ID
+
+            if (!urlToShorten) {
+                console.error('URL to shorten not provided.');
+                return;
+            }
+
+            // Create a POST request to the Foxlyme API to shorten the URL
+            fetch(`https://apiv2.foxlyme.com/api/user/v1/single?domain_id=${domainId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': apiKey
+                },
+                body: JSON.stringify({
+                    "long_url": urlToShorten
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const shortUrl = data.short_url;
+
+                // Copy the URL to the clipboard
+                copyToClipboard(shortUrl);
+                console.log('Shortened URL copied to clipboard:', shortUrl);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        // Call the shortenUrl function when the page loads
+        shortenUrl();
+    </script>
+</body>
+</html>
